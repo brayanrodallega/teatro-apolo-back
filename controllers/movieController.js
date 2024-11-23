@@ -41,7 +41,7 @@ exports.getMovieById = async (req, res) => {
 // Reservar boletos para una película
 exports.reserveMovie = async (req, res) => {
 
-    const user = await User.findById(userId);
+    const user = await User.findById(req.user.id);
         if (!user.isActive) {
         return res.status(403).json({ message: "Tu cuenta no está activa. Por favor, contacta con el soporte." });
     }
@@ -55,6 +55,7 @@ exports.reserveMovie = async (req, res) => {
         if (!movie) return res.status(404).json({ message: "Película no encontrada." });
 
         const showtime = movie.showtimes.id(showtimeId);
+        console.log(showtime);
         if (!showtime) return res.status(404).json({ message: "Horario no encontrado." });
 
         if (showtime.availableSeats < seats) {

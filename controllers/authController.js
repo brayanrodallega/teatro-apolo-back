@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 exports.register = async (req, res) => {
   try {
@@ -12,7 +13,9 @@ exports.register = async (req, res) => {
     }
 
     // Crear usuario
-    const user = new User({ email, password, name, lastName, phone });
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const user = new User({ email, password: hashedPassword, name, lastName, phone });
     await user.save();
 
     res.status(201).json({ message: "Usuario registrado con éxito." });
@@ -37,7 +40,7 @@ exports.login = async (req, res) => {
     res.cookie("token", token, { httpOnly: true });
     res.status(200).json({ message: "Inicio de sesión exitoso.", token });
   } catch (error) {
-    res.status(500).json({ message: "Error en el servidor." });
+    res.status(500).json({ message: "Error en el servidor."});
   }
 };
 
