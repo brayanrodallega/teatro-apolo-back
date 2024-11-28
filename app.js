@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const connectDB = require("./config/database");
 const authRoutes = require("./routes/auth");
 const movieRoutes = require("./routes/movie");
@@ -10,7 +11,15 @@ const app = express();
 // Middlewares básicos
 app.use(express.json());
 app.use(require("cookie-parser")());
-app.use(require("cors")());
+
+
+const corsOptions = {
+    origin: 'http://localhost:5173',
+    credentials: true,
+};
+  
+app.use(cors(corsOptions));
+
 
 // Rutas
 app.use("/api/auth", authRoutes);

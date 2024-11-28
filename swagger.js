@@ -5,7 +5,7 @@ const doc = {
     title: 'Teatro Apollo Nodejs + Mongodb',
     description: 'Description'
   },
-  host: 'https://refactored-happiness-44vxj695vpfjw7q.github.dev/:5000'
+  host: 'localhost:5000',
 };
 
 const outputFile = './swagger-output.json';
