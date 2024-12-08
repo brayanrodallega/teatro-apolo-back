@@ -13,7 +13,10 @@ app.use(express.json());
 app.use(require("cookie-parser")());
 
 // Use CORS middleware
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  credentials: true
+}));
 
 
 // Rutas
