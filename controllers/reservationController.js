@@ -5,8 +5,7 @@ const Movie = require("../models/Movie");
 // Crear una reservación
 exports.createReservation = async (req, res) => {
     try {
-        const { title, date, seats } = req.body;
-        const user = req.user._id;
+        const { title, date, userId, seats } = req.body;
 
         const movie = await Movie.findOne({ title });
         if (!movie) return res.status(404).json({ message: "Película no encontrada." });
@@ -16,8 +15,8 @@ exports.createReservation = async (req, res) => {
 
         if (showtime.availableSeats < seats) return res.status(400).json({ message: "No hay suficientes asientos disponibles." });
 
-        const reservation = new Reservation({ title, date, user, seats });
-        showtime.reservations.push({ user, seats });
+        const reservation = new Reservation({ title, date, userId, seats });
+        showtime.reservations.push({ userId, seats });
         showtime.availableSeats -= seats;
 
         await movie.save();
