@@ -1,16 +1,26 @@
-const mongoose = require("mongoose");
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.DB_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log("Conectado a MongoDB");
-  } catch (error) {
-    console.error("Error al conectar a la base de datos:", error.message);
-    process.exit(1); // Terminar el proceso si la conexión falla
+const { MongoClient, ServerApiVersion } = require('mongodb');
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(process.env.DB_URL, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
   }
-};
+});
 
-module.exports = connectDB;
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } catch (error) {
+    console.error("An error occurred while connecting to MongoDB:", error);
+  }
+}
+// run().catch(console.dir);
+
+module.exports = run;
