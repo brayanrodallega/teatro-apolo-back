@@ -5,18 +5,22 @@ const Movie = require("../models/Movie");
 // Crear una reservación
 exports.createReservation = async (req, res) => {
     try {
-        const { title, date, userId, seats } = req.body;
+        const { title, showtimeId, userId, seats } = req.body;
+        console.log(req.body);
 
         const movie = await Movie.findOne({ title });
         if (!movie) return res.status(404).json({ message: "Película no encontrada." });
 
-        const showtime = movie.showtimes.find(showtime => showtime.date == date);
+        const showtime = movie.showtimes.id(showtimeId);
         if (!showtime) return res.status(404).json({ message: "Función no encontrada." });
 
         if (showtime.availableSeats < seats) return res.status(400).json({ message: "No hay suficientes asientos disponibles." });
 
-        const reservation = new Reservation({ title, date, userId, seats });
-        showtime.reservations.push({ userId, seats });
+        const date = new Date(showtime.date);
+
+        const reservation = new Reservation({ title, date, user: userId, seats });
+        console.log(reservation);
+        showtime.reservations.push({ user: userId, seats });
         showtime.availableSeats -= seats;
 
         await movie.save();
@@ -31,18 +35,27 @@ exports.createReservation = async (req, res) => {
 // Obtener todas las reservaciones
 exports.getReservations = async (req, res) => {
     try {
-        const reservations = await Reservation.find();
-        res.status(200).json(reservations);
-    } catch (error) {
-        res.status(500).json({ message: "Error al obtener las reservaciones.", error });
-    }
+        const reservations = await Reservation.find()
+        .populate("user", "name email")
+        .exec();
+
+        res.status(200).json({
+            message: "Reservas obtenidas con éxito",
+            reservations
+          });
+        } catch (error) {
+          res.status(500).json({
+            message: "Error al obtener las reservas",
+            error
+          });
+        }
 };
 
 // Obtener una reservación por ID
 exports.getReservationById = async (req, res) => {
     try {
         const { id } = req.params;
-        const reservation = await Reservation.findById(id);
+        const reservation = await Reservation.findById(id).populate("userId", "name email").exec();
         if (!reservation) return res.status(404).json({ message: "Reservación no encontrada." });
 
         res.status(200).json(reservation);
@@ -70,7 +83,6 @@ exports.updateReservation = async (req, res) => {
 exports.deleteReservation = async (req, res) => {
     try {
         const { id } = req.params;
-
         const reservation = await Reservation.findByIdAndDelete(id);
         if (!reservation) return res.status(404).json({ message: "Reservación no encontrada." });
 
