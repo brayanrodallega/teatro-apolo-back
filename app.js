@@ -5,6 +5,7 @@ const connectDB = require("./config/database");
 const authRoutes = require("./routes/auth");
 const movieRoutes = require("./routes/movie");
 const reservationRoutes = require("./routes/reservation");
+const userRoutes = require("./routes/user");
 
 
 const app = express();
@@ -26,6 +27,7 @@ app.use(cors(corsOptions));
 
 // Rutas
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/movies", movieRoutes);
 app.use("/api/reservations", reservationRoutes);
 

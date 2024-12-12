@@ -23,9 +23,15 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  isActive: {
+  reservations: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Reservation",
+    },
+  ],
+  isAdmin: {
     type: Boolean,
-    default: true,
+    default: false,
   },
 });
 
